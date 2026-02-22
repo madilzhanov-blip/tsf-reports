@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Редактирование замечания{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>✏️ Редактирование отчета о замечании #{{ remark.id }}</h2>
+    <p style="color: #666; margin-bottom: 30px;">Последнее обновление: {{ remark.get('updated_at', remark.created_at) }}</p>
+    
+    <form method="POST">
+        <h3 style="margin-bottom: 20px; color: #2c3e50;">📋 Основная информация</h3>
+        
+        <div class="form-group">
+            <label for="Discipline">1. Дисциплина *</label>
+            <select id="Discipline" name="Discipline" required>
+                <option value="">Выберите дисциплину</option>
+                <option value="CIV" {{ 'selected' if remark.Discipline == 'CIV' else '' }}>CIV</option>
+                <option value="ELE" {{ 'selected' if remark.Discipline == 'ELE' else '' }}>ELE</option>
+                <option value="PIP" {{ 'selected' if remark.Discipline == 'PIP' else '' }}>PIP</option>
+                <option value="CCTV" {{ 'selected' if remark.Discipline == 'CCTV' else '' }}>CCTV</option>
+                <option value="INS" {{ 'selected' if remark.Discipline == 'INS' else '' }}>INS</option>
+                <option value="STS" {{ 'selected' if remark.Discipline == 'STS' else '' }}>STS</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="major_object">2. Наименование объекта *</label>
+            <select id="major_object" name="major_object" required>
+                <option value="">Выберите объект</option>
+                <option value="Магистральный пульповода хвостов карты 1" {{ 'selected' if remark.major_object == 'Магистральный пульповода хвостов карты 1' else '' }}>Магистральный пульповода хвостов карты 1</option>
+                <option value="Распределительный пульповод" {{ 'selected' if remark.major_object == 'Распределительный пульповод' else '' }}>Распределительный пульповод</option>
+                <option value="Площадка подстанции ГПП-1 110/10кВ. ГПП-1 ПС 110/6 кВ - 2х10000" {{ 'selected' if remark.major_object == 'Площадка подстанции ГПП-1 110/10кВ. ГПП-1 ПС 110/6 кВ - 2х10000' else '' }}>Площадка подстанции ГПП-1 110/10кВ. ГПП-1 ПС 110/6 кВ - 2х10000</option>
+                <option value="Пионерная дамба" {{ 'selected' if remark.major_object == 'Пионерная дамба' else '' }}>Пионерная дамба</option>
+                <option value="Другое" {{ 'selected' if remark.major_object == 'Другое' else '' }}>Другое</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="remark_description">3. Описание замечания</label>
+            <input type="text" id="remark_description" name="remark_description" 
+                   value="{{ remark.remark_description }}" required
+                   placeholder="Подробная информация выявленных замечаний подрядной организации">
+        </div>
+
+        <div class="form-group">
+            <label for="link_to_normative">4. Ссылка на нормативный документ или процедуру</label>
+            <input type="text" id="link_to_normative" name="link_to_normative" 
+                   value="{{ remark.link_to_normative }}" required
+                   placeholder="ГОСТ 10181-2000, ППР TSFS-EE-000000-CIV-MET-0004">
+        </div>
+            
+        <div class="form-group">
+            <label for="inspection_date">5. Дата выпуска *</label>
+            <input type="date" id="inspection_date" name="inspection_date" 
+                   value="{{ remark.inspection_date }}"required>
+        </div>
+        
+        <div class="form-group">
+            <label for="responsible_person_cont">6. Ответственное лицо от подрядчика</label>
+            <input type="text" id="responsible_person_cont" name="responsible_person_cont" 
+                   value="{{ remark.responsible_person_cont }}" required
+                   placeholder="Ф.И.О">
+        </div>
+
+        <div class="form-group">
+            <label for="inspector_name_field">7. ФИО Инспектора</label>
+            <input type="text" id="inspector_name_field" name="inspector_name_field" 
+                   value="{{ remark.inspector_name_field }}"
+                   placeholder="ФИО проводящего инспекцию">
+        </div>
+
+        <div class="form-group">
+            <label for="remark_closed_date.plan">8. Планируемая дата закрытия *</label>
+            <input type="date" id="remark_closed_date.plan" name="remark_closed_date.plan" 
+                   value="{{ remark.get('remark_closed_date.plan', '') }}">
+        </div>
+
+        <div class="form-group">
+            <label for="remark_closed_date.actual">9. Фактическая дата закрытия</label>
+            <input type="date" id="remark_closed_date.actual" name="remark_closed_date.actual" 
+                   value="{{ remark.get('remark_closed_date.actual', '') }}">
+        </div>
+        
+        <div class="form-group">
+            <label for="reason_for_reject">10. Причина отклонения и необходимые действия по устранению замечания</label>
+            <textarea id="reason_for_reject" name="reason_for_reject" rows="3" required
+                      placeholder="Необходимо досыпать до проектных требований согласно нормативных документов.">{{ remark.reason_for_reject }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="Status">11. Статус</label>
+            <select id="Status" name="Status">
+                <option value="">Выберите статус</option>
+                <option value="Закрыто" {{ 'selected' if remark.Status == 'Закрыто' else '' }}>✅ Закрыто</option>
+                <option value="Открыто" {{ 'selected' if remark.Status == 'Открыто' else '' }}>⚠ Открыто</option>
+            </select>
+        </div>
+
+        <!-- Информация о создании -->
+        <div class="row mb-3" style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+            <div class="col-md-6">
+                <label class="form-label" style="font-weight: bold;">👨‍💼 Создал:</label>
+                <input type="text" class="form-control" value="{{ remark.inspector_name }}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" style="font-weight: bold;">📅 Дата создания:</label>
+                <input type="text" class="form-control" value="{{ remark.created_at }}" readonly>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 15px; margin-top: 30px;">
+            <button type="submit" class="btn btn-success" style="flex: 1;">
+                💾 Сохранить изменения
+            </button>
+            <a href="{{ url_for('remark_list') }}" class="btn btn-secondary" style="flex: 0 0 200px;">
+                🔙 Отмена
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

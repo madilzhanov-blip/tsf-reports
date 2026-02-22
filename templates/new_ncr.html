@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}New ncr {% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>❌ Создание отчета о несоответствии</h2>
+    <p style="color: #666; margin-bottom: 30px;">Контроль качества строительных работ</p>
+    
+    <form method="POST" enctype="multipart/form-data">
+        <h3 style="margin-bottom: 20px; color: #2c3e50;">📋 Основная информация</h3>
+        
+        <div class="form-group">
+            <label for="NCR_Number">1. Номер NCR</label>
+            <input type="text"
+       name="NCR_Number"
+       value="{{ generated_ncr_number }}"
+       >
+        </div>
+        
+        <div class="form-group">
+            <label>2. Проект</label>
+            <select name="Project" class="form-select" required>
+            <option value="">— Выберите проект —</option>
+            <option value="Освоения месторождения Ешлик-1 
+Строительства комплекса медно-обогатительной фабрики (МОФ-3) с полным технологическим циклом производства.Хвостовое Хозяйство Карта №1
+">Освоения месторождения Ешлик-1 
+Строительства комплекса медно-обогатительной фабрики (МОФ-3) с полным технологическим циклом производства.Хвостовое Хозяйство Карта №1
+</option>
+            
+            <option value="Другое">Другое</option>
+    </select>
+</div>
+
+
+        <div class="form-group">
+            <label for="Discipline">3. Дисциплина *</label>
+            <select id="Discipline" name="Discipline" required>
+                <option value="">Выберите дисциплину</option>
+                <option value="CIV">CIV</option>
+                <option value="ELE">ELE</option>
+                <option value="PIP">PIP</option>
+                <option value="CCTV">CCTV</option>
+                <option value="INS">INS</option>
+                <option value="STS">STS</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="Contractor">4. Кому выдано</label>
+            <input type="text"
+       name="Contractor"
+       value="{{ generated_contractor }}"
+       >
+        </div>
+        <div class="form-group">
+            <label for="technical_supervisor_company">5. Кем выдано</label>
+            <input type="text"
+       name="technical_supervisor_company"
+       value="{{ generated_technical_supervisor_company }}"
+       >
+        </div>
+        
+        <div class="form-group">
+            <label for="major_object">6. Наименование объекта *</label>
+            <select id="major_object" name="major_object" required>
+                <option value="">Выберите объект</option>
+                <option value="Магистральный пульповод хвостов карты 1">Магистральный пульповод хвостов карты 1</option>
+                <option value="Распределительный пульповод">Распределительный пульповод</option>
+                <option value="Площадка подстанции ГПП-1 110/10кВ. ГПП-1 ПС 110/6 кВ - 2х10000">Площадка подстанции ГПП-1 110/10кВ. ГПП-1 ПС 110/6 кВ - 2х10000</option>
+                <option value="Пионерная дамба">Пионерная дамба</option>
+                <option value="Участок водозабора">Участок водозабора</option>
+                <option value="Другое">Другое</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="Draw_number">7. Номер чертежа</label>
+            <input type="text" id="Draw_number" name="Draw_number" required
+                   placeholder="Номер чертежа принадлежащего участку ">
+        </div>
+
+        <div class="form-group">
+            <label for="Location">8. Конструктив / расположение / участок</label>
+            <input type="text" id="Location" name="Location" required
+                   placeholder="Фундамент ФМ-2,Северная дамба">
+        </div>
+        <div class="form-group">
+            <label for="Procedure">9. Процедура</label>
+            <input type="text" id="Procedure" name="Procedure" required
+
+                   placeholder="Пункты ШНК/ППР ">
+        </div>
+
+
+        <div class="form-group">
+            <label for="NCR_Description">10. Описание несоответсвия</label>
+            <textarea name="NCR_Description" rows="4" required></textarea
+                   placeholder="Подробная информация обнаружения несоответсвия">
+        </div>
+        <div class="form-group">
+            <label for="NCR_grade">11. Оценка несоответсвия *</label>
+            <select id="NCR_grade" name="NCR_grade" required>
+                <option value="">Оцените несоответсвия</option>
+                <option value="Очень важный">Очень важный</option>
+                <option value="Неотложный">Неотложный</option>
+                <option value="Незначительный">Незначительный</option>
+                <option value="Несрочный">Несрочный</option>
+                <option value="Другое">Другое</option>
+            </select>
+        </div>   
+        <div class="form-group">
+            <label for="inspection_date">12. Дата выпуска *</label>
+            <input type="date" name="inspection_date" required>
+        </div>
+        
+        <div class="form-group">
+             <label for="Correction_acts">13. Корректирующие действия Подрядчика</label>
+            <textarea name="Correction_acts" rows="4" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>14. Срок закрытия *</label>
+            <input type="date" id="closed_date.plan" name="closed_date.plan">
+
+        </div>           
+        
+        <div class="form-group">
+            <label for="Measures">15. Меры *</label>
+            <select id="Measures" name="Measures" required>
+                <option value="Доработка">Доработка</option>
+                <option value="Ремонт">Ремонт</option>
+                <option value="Отбраковать">Отбраковать</option>
+                <option value="Оставить как есть">Оставить как есть</option>
+                <option value="Другое">Другое</option>
+            </select>
+        </div>  
+
+        
+        
+        <div class="form-group">
+            <label for="inspector_name_field">16. ФИО Инспектора</label>
+            <input type="text" id="inspector_name_field" name="inspector_name_field" 
+                   value="{{ session.full_name }}"
+                   placeholder="ФИО проводящего инспекцию">
+        </div>
+        
+        <div class="form-group">
+            <label for="NCR_Status">17. Статус NCR</label>
+            <select id="NCR_Status" name="NCR_Status">
+                <option value="">Выберите статус</option>
+                <option value="Закрыто">✅ Закрыто</option>
+                <option value="Открыто" selected>⚠ Открыто</option>
+                <option value="Принято с замечаниями">⚠️ Принято с замечаниями</option>
+                <option value="Отклонено">❌ Отклонено</option>
+                <option value="Требует доработки">🔧 Требует доработки</option>
+                <option value="На рассмотрении">⏳ На рассмотрении</option>
+            </select>
+        </div>
+        
+       <hr>
+
+       <h3 style="margin-top: 30px;">📷 Фото отчет</h3>
+
+       <div class="form-group">
+            <label> </label>
+           <input type="file"
+           name="photos"
+           accept="image/*"
+           multiple
+           class="form-control">
+    <small style="color: #666;">
+        Допустимые форматы: JPG, PNG
+    </small>
+</div>
+
+        
+        <div style="display: flex; gap: 15px; margin-top: 30px;">
+            <button type="submit" class="btn btn-geodetic" style="flex: 1;">
+                ✅ Создать отчет о несоответствии
+            </button>
+            <a href="/choose_type" class="btn btn-danger" style="flex: 0 0 200px;">
+                ❌ Отмена
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Устанавливаем текущую дату и время
+document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    const currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+    document.getElementById('inspection_date').value = `${year}-${month}-${day}`;
+});
+</script>
+{% endblock %}

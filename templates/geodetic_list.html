@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Геодезические инспекции{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2>📍 Геодезические инспекции</h2>
+    <div style="display: flex; gap: 10px;">
+        <a href="{{ url_for('export_geodetic', status=current_status, decision=current_decision, date_from=current_date_from, date_to=current_date_to) }}" class="btn btn-success">📊 Excel</a>
+        <a href="/new_geodetic" class="btn btn-geodetic">➕ Новая геодезическая</a>
+    </div>
+</div>
+
+<!-- ФИЛЬТРЫ -->
+<div class="card" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa;">
+    <form method="GET" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: end;">
+        <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">🔄 Статус:</label>
+            <select name="status" class="form-select" style="min-width: 150px;">
+                <option value="">Все статусы</option>
+                <option value="В работе" {{ 'selected' if current_status == 'В работе' else '' }}>🔄 В работе</option>
+                <option value="Завершено" {{ 'selected' if current_status == 'Завершено' else '' }}>✅ Завершено</option>
+                <option value="Приостановлено" {{ 'selected' if current_status == 'Приостановлено' else '' }}>⏸️ Приостановлено</option>
+            </select>
+        </div>
+        
+        <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">✅ Решение:</label>
+            <select name="decision" class="form-select" style="min-width: 150px;">
+                <option value="">Все решения</option>
+                <option value="Принято" {{ 'selected' if current_decision == 'Принято' else '' }}>✅ Принято</option>
+                <option value="Принято с замечаниями" {{ 'selected' if current_decision == 'Принято с замечаниями' else '' }}>⚠️ С замечаниями</option>
+                <option value="Отклонено" {{ 'selected' if current_decision == 'Отклонено' else '' }}>❌ Отклонено</option>
+            </select>
+        </div>
+        
+        <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">📅 Дата от:</label>
+            <input type="date" name="date_from" class="form-control" value="{{ current_date_from }}" style="min-width: 150px;">
+        </div>
+        
+        <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">📅 Дата до:</label>
+            <input type="date" name="date_to" class="form-control" value="{{ current_date_to }}" style="min-width: 150px;">
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" class="btn btn-primary">🔍 Фильтровать</button>
+            <a href="{{ url_for('geodetic_list') }}" class="btn btn-secondary">🔄 Сбросить</a>
+        </div>
+    </form>
+</div>
+
+    {% if inspections %}
+        <div style="overflow-x: auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Проект</th>
+                        <th>Укрупненный объект</th>
+                        <th>Пакет работ</th>
+                        <th>Дата инспекции</th>
+                        <th>Объект</th>
+                        <th>Участок</th>
+                        <th>Название работ</th>
+                        <th>Кол-во по проекту</th>
+                        <th>Кол-во фактически</th>
+                        <th>Пикетаж от</th>
+                        <th>Пикетаж до</th>
+                        <th>ФИО Инспектора</th>
+                        <th>Решение</th>
+                        <th>Комментарии</th>
+                        <th>Кто создал</th>
+                        <th>Дата создания</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inspection in inspections %}
+                    <tr>
+                        <td>{{ inspection.id }}</td>
+                        <td><strong>{{ inspection.project or '-' }}</strong></td>
+                        <td>{{ inspection.major_object or '-' }}</td>
+                        <td>{{ inspection.work_package or '-' }}</td>
+                        <td>{{ inspection.inspection_date or '-' }}</td>
+                        <td>{{ inspection.object or '-' }}</td>
+                        <td>{{ inspection.section or '-' }}</td>
+                        <td>{{ inspection.work_name or '-' }}</td>
+                        <td>{{ inspection.quantity_project or inspection.quantity_items_project or '-' }}</td>
+                        <td>{{ inspection.quantity_actual or inspection.quantity_items_actual or '-' }}</td>
+                        <td>{{ inspection.picket_from or '-' }}</td>
+                        <td>{{ inspection.picket_to or '-' }}</td>
+                        <td>{{ inspection.inspector_name_field or '-' }}</td>
+                        <td>
+                            {% if inspection.decision %}
+                                {% if inspection.decision == 'Принято' %}
+                                    <span style="color: #27ae60;">✅ Принято</span>
+                                {% elif inspection.decision == 'Отклонено' %}
+                                    <span style="color: #e74c3c;">❌ Отклонено</span>
+                                {% elif inspection.decision == 'Принято с замечаниями' %}
+                                    <span style="color: #f39c12;">⚠️ С замечаниями</span>
+                                {% else %}
+                                    <span style="color: #3498db;">{{ inspection.decision }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span style="color: #95a5a6;">-</span>
+                            {% endif %}
+                        </td>
+                        </td>
+                        <td>{{ inspection.deviation_comments or '-' }}</td>
+                        <td><strong>{{ inspection.inspector_name or '-' }}</strong></td>
+                        <td>{{ inspection.created_at.split(' ')[0] if inspection.created_at else '-' }}</td>
+                        <td>
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                <a href="{{ url_for('edit_geodetic', inspection_id=inspection.id) }}" class="btn btn-warning btn-sm">
+                                    ✏️ Редактировать
+                                </a>
+                                <form method="POST" action="{{ url_for('delete_geodetic', inspection_id=inspection.id) }}" style="display: inline;" onsubmit="return confirm('Вы уверены, что хотите удалить инспекцию #{{ inspection.id }}?')">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        🗑️ Удалить
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 40px; color: #666;">
+            <div style="font-size: 3em; margin-bottom: 15px;">📍</div>
+            <h3>Геодезических инспекций пока нет</h3>
+            <p>Создайте первую геодезическую инспекцию!</p>
+            <a href="/new_geodetic" class="btn btn-geodetic" style="margin-top: 15px;">Создать инспекцию</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

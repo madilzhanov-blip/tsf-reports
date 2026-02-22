@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Учет техники - Дашборд{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📊 Дашборд учета техники</h2>
+    <p style="color: #666; margin-bottom: 30px;">Актуальная информация по состоянию техники</p>
+    
+    <!-- Быстрые действия -->
+    <div style="margin-bottom: 30px; display: flex; gap: 15px; flex-wrap: wrap;">
+        <a href="/equipment/new_report" class="btn btn-success">➕ Новый сменный отчет</a>
+        <a href="/equipment/reports" class="btn btn-primary">📋 Все отчеты</a>
+        <a href="/equipment/statistics" class="btn btn-info">📈 Аналитика</a>
+        <a href="/equipment/export" class="btn btn-warning">📤 Экспорт Excel</a>
+    </div>
+    
+    <!-- КПЭ карточки -->
+    {% if dashboard_data.latest_report %}
+    <div class="stats-grid">
+        <div class="stat-card" style="background: #3498db;">
+            <div class="stat-number">{{ dashboard_data.latest_report.totals.total_working }}</div>
+            <div>Техники в работе</div>
+        </div>
+        
+        <div class="stat-card" style="background: #2ecc71;">
+            <div class="stat-number">{{ dashboard_data.latest_report.totals.efficiency_percent }}%</div>
+            <div>Эффективность</div>
+        </div>
+        
+        <div class="stat-card" style="background: #f39c12;">
+            <div class="stat-number">{{ dashboard_data.latest_report.totals.total_waiting }}</div>
+            <div>В ожидании</div>
+        </div>
+        
+        <div class="stat-card" style="background: #e74c3c;">
+            <div class="stat-number">{{ dashboard_data.latest_report.totals.total_repair }}</div>
+            <div>В ремонте</div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Последний отчет -->
+    {% if dashboard_data.latest_report %}
+    <div class="card" style="margin-bottom: 30px;">
+        <h3>🕐 Последний отчет</h3>
+        <p><strong>Дата:</strong> {{ dashboard_data.latest_report.date }} | 
+           <strong>Смена:</strong> {{ dashboard_data.latest_report.shift }} |
+           <strong>Инспектор:</strong> {{ dashboard_data.latest_report.inspector_name }}</p>
+        
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Техника</th>
+                        <th>Всего</th>
+                        <th>В работе</th>
+                        <th>%</th>
+                        <th>Ожидание</th>
+                        <th>Ремонт</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for equipment in dashboard_data.latest_report.equipment_data %}
+                    <tr>
+                        <td><strong>{{ equipment.type }}</strong></td>
+                        <td>{{ equipment.available }}</td>
+                        <td>{{ equipment.working }}</td>
+                        <td>
+                            {% set efficiency = (equipment.working / equipment.available * 100) if equipment.available > 0 else 0 %}
+                            <span class="badge badge-{% if efficiency >= 70 %}success{% elif efficiency >= 50 %}warning{% else %}danger{% endif %}">
+                                {{ "%.1f"|format(efficiency) }}%
+                            </span>
+                        </td>
+                        <td>{{ equipment.waiting }}</td>
+                        <td>{{ equipment.repair }}</td>
+                        <td>
+                            <small>
+                                {% if equipment.no_operator > 0 %}Без мех.: {{ equipment.no_operator }}<br>{% endif %}
+                                {% if equipment.no_fuel > 0 %}Без топлива: {{ equipment.no_fuel }}{% endif %}
+                            </small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Статистика по типам техники -->
+    <div class="card">
+        <h3>📈 Статистика за 30 дней</h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            {% for equipment_type, stats in dashboard_data.statistics.items() %}
+            {% if stats.total_shifts > 0 %}
+            <div style="padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                <h4 style="color: #2c3e50; margin-bottom: 15px;">{{ equipment_type }}</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+                    <div><strong>Смен:</strong> {{ stats.total_shifts }}</div>
+                    <div><strong>Ср. в работе:</strong> {{ stats.avg_working }}</div>
+                    <div><strong>Эффективность:</strong> 
+                        <span class="badge badge-{% if stats.avg_efficiency >= 70 %}success{% elif stats.avg_efficiency >= 50 %}warning{% else %}danger{% endif %}">
+                            {{ stats.avg_efficiency }}%
+                        </span>
+                    </div>
+                    <div><strong>Общий макс.:</strong> {{ equipment_types[equipment_type].max_count }}</div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    color: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.badge-success { background: #28a745; color: white; }
+.badge-warning { background: #ffc107; color: black; }
+.badge-danger { background: #dc3545; color: white; }
+.badge-info { background: #17a2b8; color: white; }
+
+.table-container {
+    overflow-x: auto;
+}
+</style>
+{% endblock %}

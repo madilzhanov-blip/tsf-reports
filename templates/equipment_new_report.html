@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}Новый сменный отчет{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📝 Новый сменный отчет по технике</h2>
+    <p style="color: #666; margin-bottom: 30px;">Заполните данные по каждому типу техники</p>
+    
+    <form method="POST" id="equipmentForm">
+        <!-- Основная информация -->
+        <div class="form-row-3">
+            <div class="form-group">
+                <label for="date">Дата смены *</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="shift">Смена *</label>
+                <select id="shift" name="shift" required>
+                    <option value="">Выберите смену</option>
+                    <option value="День">🌅 День (06:00-18:00)</option>
+                    <option value="Ночь">🌙 Ночь (18:00-06:00)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="inspector_name">Инспектор *</label>
+                <input type="text" id="inspector_name" name="inspector_name" 
+                       value="{{ session.full_name }}" required>
+            </div>
+        </div>
+        
+        <!-- Данные по технике -->
+        <h3 style="margin: 30px 0 20px 0; color: #2c3e50;">🚜 Данные по технике</h3>
+        
+        <div id="equipmentData">
+            {% for equipment_type, info in equipment_types.items() %}
+            <div class="equipment-section">
+                <h4 style="background: #f8f9fa; padding: 15px; margin: 20px 0 0 0; border-radius: 5px;">
+                    {{ equipment_type }} 
+                    <small style="color: #666;">(макс. {{ info.max_count }} {{ info.unit }})</small>
+                </h4>
+                
+                <div class="form-row-4">
+                    <div class="form-group">
+                        <label>Доступно всего</label>
+                        <input type="number" name="available_{{ loop.index0 }}" 
+                               max="{{ info.max_count }}" min="0" 
+                               onchange="calculateEfficiency({{ loop.index0 }})"
+                               placeholder="0">
+                        <input type="hidden" name="type_{{ loop.index0 }}" value="{{ equipment_type }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>В работе</label>
+                        <input type="number" name="working_{{ loop.index0 }}" 
+                               min="0" onchange="calculateEfficiency({{ loop.index0 }})"
+                               placeholder="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>В ожидании</label>
+                        <input type="number" name="waiting_{{ loop.index0 }}" 
+                               min="0" placeholder="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>В ремонте</label>
+                        <input type="number" name="repair_{{ loop.index0 }}" 
+                               min="0" placeholder="0">
+                    </div>
+                </div>
+                
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>Без механизатора</label>
+                        <input type="number" name="no_operator_{{ loop.index0 }}" 
+                               min="0" placeholder="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Нет топлива</label>
+                        <input type="number" name="no_fuel_{{ loop.index0 }}" 
+                               min="0" placeholder="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Эффективность</label>
+                        <input type="text" id="efficiency_{{ loop.index0 }}" 
+                               readonly style="background: #f8f9fa; font-weight: bold;">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>На дамбе</label>
+                        <input type="number" name="on_dam_{{ loop.index0 }}" 
+                               min="0" placeholder="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Основной участок работ</label>
+                        <select name="location_{{ loop.index0 }}">
+                            <option value="">Выберите участок</option>
+                            {% for location in work_locations %}
+                            <option value="{{ location }}">{{ location }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Дополнительные комментарии</label>
+                    <textarea name="comments_{{ loop.index0 }}" rows="2" 
+                              placeholder="Особенности, проблемы, примечания..."></textarea>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Общие итоги -->
+        <div style="background: #e3f2fd; padding: 20px; border-radius: 5px; margin: 30px 0;">
+            <h3 style="color: #1565c0; margin-bottom: 15px;">📊 Общие итоги</h3>
+            <div class="form-row-4">
+                <div>
+                    <strong>Всего доступно:</strong> 
+                    <span id="totalAvailable" style="font-size: 1.2em; color: #1565c0;">0</span>
+                </div>
+                <div>
+                    <strong>В работе:</strong> 
+                    <span id="totalWorking" style="font-size: 1.2em; color: #2e7d32;">0</span>
+                </div>
+                <div>
+                    <strong>Общая эффективность:</strong> 
+                    <span id="totalEfficiency" style="font-size: 1.2em; color: #ed6c02;">0%</span>
+                </div>
+                <div>
+                    <strong>Простои:</strong> 
+                    <span id="totalDowntime" style="font-size: 1.2em; color: #d32f2f;">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Кнопки -->
+        <div style="display: flex; gap: 15px; margin-top: 30px;">
+            <button type="submit" class="btn btn-success" style="flex: 1;">
+                💾 Сохранить отчет
+            </button>
+            <a href="/equipment" class="btn btn-secondary" style="flex: 0 0 200px;">
+                🔙 К дашборду
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Количество типов техники
+const equipmentCount = {{ equipment_types|length }};
+
+function calculateEfficiency(index) {
+    const available = parseInt(document.querySelector(`[name="available_${index}"]`).value) || 0;
+    const working = parseInt(document.querySelector(`[name="working_${index}"]`).value) || 0;
+    
+    const efficiency = available > 0 ? Math.round((working / available) * 100) : 0;
+    document.getElementById(`efficiency_${index}`).value = `${efficiency}%`;
+    
+    updateTotals();
+}
+
+function updateTotals() {
+    let totalAvailable = 0;
+    let totalWorking = 0;
+    
+    for (let i = 0; i < equipmentCount; i++) {
+        totalAvailable += parseInt(document.querySelector(`[name="available_${i}"]`).value) || 0;
+        totalWorking += parseInt(document.querySelector(`[name="working_${i}"]`).value) || 0;
+    }
+    
+    const totalEfficiency = totalAvailable > 0 ? Math.round((totalWorking / totalAvailable) * 100) : 0;
+    const totalDowntime = totalAvailable - totalWorking;
+    
+    document.getElementById('totalAvailable').textContent = totalAvailable;
+    document.getElementById('totalWorking').textContent = totalWorking;
+    document.getElementById('totalEfficiency').textContent = `${totalEfficiency}%`;
+    document.getElementById('totalDowntime').textContent = totalDowntime;
+}
+
+// Обновляем итоги при изменении любого поля
+document.addEventListener('DOMContentLoaded', function() {
+    // Устанавливаем текущую дату
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+    
+    // Устанавливаем смену по текущему времени
+    const currentHour = new Date().getHours();
+    const shiftSelect = document.getElementById('shift');
+    if (currentHour >= 6 && currentHour < 18) {
+        shiftSelect.value = 'День';
+    } else {
+        shiftSelect.value = 'Ночь';
+    }
+    
+    // Добавляем обработчики событий
+    const inputs = document.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => {
+        input.addEventListener('input', updateTotals);
+    });
+});
+
+// Проверка корректности данных
+document.getElementById('equipmentForm').addEventListener('submit', function(e) {
+    let hasErrors = false;
+    const errors = [];
+    
+    for (let i = 0; i < equipmentCount; i++) {
+        const available = parseInt(document.querySelector(`[name="available_${i}"]`).value) || 0;
+        const working = parseInt(document.querySelector(`[name="working_${i}"]`).value) || 0;
+        const equipmentType = document.querySelector(`[name="type_${i}"]`).value;
+        
+        if (working > available && available > 0) {
+            errors.push(`${equipmentType}: В работе не может быть больше доступного`);
+            hasErrors = true;
+        }
+    }
+    
+    if (hasErrors) {
+        e.preventDefault();
+        alert('Обнаружены ошибки:\n\n' + errors.join('\n'));
+    }
+});
+</script>
+
+<style>
+.equipment-section {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 15px;
+    transition: border-color 0.3s;
+}
+
+.equipment-section:hover {
+    border-color: #3498db;
+}
+
+.form-row-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 15px;
+}
+
+.form-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+@media (max-width: 768px) {
+    .form-row-4,
+    .form-row-3,
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

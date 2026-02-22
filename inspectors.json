@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "username": "m.adilzhanov@pmoagmk.uz",
+    "password": "123456",
+    "full_name": "Madiyar Adilzhanov Alikovich",
+    "position": "Инженер по общестроительным работам",
+    "created_at": "2025-08-08 16:17:07"
+  },
+  {
+    "id": 2,
+    "username": "a.djurabekov@pmoagmk.uz",
+    "password": "123456",
+    "full_name": "Abdusait Djurabekov Abduraimovich",
+    "position": "Маркшейдер",
+    "created_at": "2025-08-08 16:17:07"
+  },
+  {
+    "id": 3,
+    "username": "a.akhmadov@pmoagmk.uz",
+    "password": "123456",
+    "full_name": "Abbos Akhmadov Nasriddin ugli",
+    "position": "Инженер по общестроительным работам",
+    "created_at": "2025-08-08 16:17:07"
+  },
+  {
+    "id": 4,
+    "username": "d.rasulov@pmoagmk.uz",
+    "password": "123456",
+    "full_name": "Doniyorkhon Rasulov Jurakhon ugli",
+    "position": "Инженер по общестроительным работам",
+    "created_at": "2025-08-08 16:17:07"
+  },
+  {
+    "id": 5,
+    "username": "a.ismailov@pmoagmk.uz",
+    "password": "123456",
+    "full_name": "Aybek Ismailov Dzhurabekovich",
+    "position": "Маркшейдер",
+    "created_at": "2025-08-08 16:17:07"
+  },
+  {
+    "id": 6,
+    "username": "a.ten@pmoagmk.uz",
+    "password": "123456",
+    "full_name": "Aleksandr Ten Valerievich",
+    "position": "Руководитель сектора стройплощадки",
+    "created_at": "2025-08-08 16:17:07"
+  },
+  {
+    "id": 7,
+    "username": "t.usmanov@pmoagmk.uz",
+    "password": "123456",
+    "full_name": "Takhir Usmanov Tajibaevich",
+    "position": "Инженер-механик",
+    "created_at": "2025-08-08 16:17:07"
+  },
+  {
+    "id": 8,
+    "username": "s.madarov@pmoagmk.uz",
+    "password": "123456",
+    "full_name": "Sarvar Madarov Mirabdullaevich",
+    "position": "Маркшейдер",
+    "created_at": "2025-08-08 16:17:07"
+  },
+  {
+    "id": 8,
+    "username": "test.user@pmoagmk.uz",
+    "password": "123456",
+    "full_name": "Test User",
+    "position": "Test",
+    "created_at": "2025-08-08 16:17:07"
+  },
+    {
+    "id": 8,
+    "username": "a.khamdamov@pmoagmk.uz",
+    "password": "123456",
+    "full_name": "Azamat Khamdamov Ilkhomovich",
+    "position": "Маркшейдер",
+    "created_at": "2025-08-08 16:17:07"
+  }
+]

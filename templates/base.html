@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Система инспекций{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* === COLOR SYSTEM (PROCESS STYLE) === */
+    :root {
+        --blue-main: #2f4154;
+        --blue-dark: #243444;
+        --blue-light: #e9eef3;
+        --accent: #f7931e;
+        --text-dark: #1f2d3d;
+        --text-light: #ffffff;
+        --border: #d6dde5;
+    }
+        body {
+    font-family: Times New Roman, sans-serif;
+    background: #f4f6f8;
+    color: var(--text-dark);
+    }
+
+
+        .container {
+            max-width: 2500px;
+            margin: 0 auto;
+            background: transparent;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: #2c3e50;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* СТИЛИ ДЛЯ ЛОГОТИПА */
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: left;
+            gap: 20px;
+        }
+
+        .logo {
+            height: 120px;
+            width: auto;
+        }
+
+        .header-text {
+            text-align: center;
+        }
+
+        .header-text h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        .header-text p {
+            margin: 5px 0 0 0;
+            opacity: 0.9;
+        }
+
+        .nav {
+            background: #34495e;
+        }
+
+        .nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav li {
+            flex: 0 0 auto;  
+            min-width: 150px;
+        }
+
+        .nav a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+
+
+        .content {
+            padding: 40px;
+            max-width: 2500px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+    border-radius: 999px;
+    padding: 10px 22px;
+    font-weight: 500;
+    font-size: 14px;
+    background: var(--blue-light);
+    color: var(--text-dark);
+    border: 1px solid var(--border);
+    box-shadow: none;
+    transition: background 0.2s;
+}
+
+
+
+
+        
+
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+input[readonly],
+select[readonly],
+textarea[readonly],
+input:disabled,
+select:disabled,
+textarea:disabled {
+    background: #f1f4f7;
+    color: #8a97a6;
+    cursor: not-allowed;
+}
+
+        .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #5f6f82;
+}
+
+        .form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 14px;
+    background: white;
+    color: var(--text-dark);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+
+        .form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--blue-main);
+    box-shadow: 0 0 0 2px rgba(47, 65, 84, 0.15);
+}
+
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-row-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .table {
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.table th {
+    background: #f4f7fa;
+    color: #5f6f82;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border);
+}
+
+.table td {
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-dark);
+}
+
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1600px) {
+            .container {
+                max-width: 1600px;
+            }
+            .content {
+                padding: 50px;
+                max-width: 1500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+           
+            
+            .form-row,
+            .form-row-3,
+            .form-row-4 {
+                grid-template-columns: 1fr;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .container {
+                max-width: 100%;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .header-text {
+                text-align: center;
+            }
+            
+            .logo {
+                height: 50px;
+            }
+        }
+
+
+.btn:hover {
+    background: #dde5ec;
+    transform: none;
+}
+
+.btn-primary {
+    background: var(--blue-main);
+    color: var(--text-light);
+    border: none;
+}
+
+.btn-accent {
+    background: var(--accent);
+    color: white;
+    border: none;
+}
+
+.btn-danger {
+    background: #c0392b;
+    color: white;
+    border: none;
+}
+
+
+
+
+.stat-card {
+    background: var(--blue-main);
+    border-radius: 20px;
+    padding: 30px;
+    color: white;
+}
+
+.stat-card.ncr {
+    background: var(--accent);
+}
+.quick-actions .btn {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+.nav ul {
+    gap: 8px;
+}
+
+.nav a {
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-size: 13px;
+}
+
+.nav a:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.nav .logout {
+    border-radius: 999px;
+}
+.form-section {
+    padding: 20px;
+    border-radius: 16px;
+    background: #f8fafc;
+    margin-bottom: 30px;
+}
+::placeholder {
+    color: #9aa8b6;
+    font-size: 13px;
+}
+label span.required {
+    color: var(--accent);
+}
+
+
+    </style>
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#2f4154">
+</head>
+
+
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <img src="{{ url_for('static', filename='images/logo5.png') }}" 
+                     alt="TSF Reports Logo" 
+                     class="logo">
+                <div class="header-text">
+                    <h1>TSF Reports, Copper Plant-3</h1>
+                    {% if session.username %}
+                        <p>{{ session.full_name }} | General section</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% if session.username %}
+        <nav class="nav">
+            <ul>
+                <li><a href="/">📊 Главная страница</a></li>
+                <li><a href="/choose_type">➕ Новый отчет</a></li>
+                <li><a href="/geodetic_list">🏗️ Геодезия (список)</a></li>
+                <li><a href="/civil_list">⚙️ CIVIL WORKS (список)</a></li>
+                <li><a href="/ncr_list">❌ NCR (Список)</a></li>
+                <li><a href="/remark_list">⚠️ Замечание(Список)</a></li>
+                <li><a href="/daily_report_list">Daily reports(CIVIL)</a></li>
+                <li><a href="/daily_report_list_pip">Daily reports(PIP)</a></li>
+                <li><a href="/logout" class="logout">🚪 Выход</a></li>
+
+
+
+            </ul>
+        </nav>
+        {% endif %}
+
+        <div class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'success' if category == 'success' else 'error' }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/static/sw.js')
+    .then(reg => console.log('✅ SW registered, scope:', reg.scope))
+    .catch(err => console.error('❌ SW error', err));
+}
+</script>
+</body>
+</html>

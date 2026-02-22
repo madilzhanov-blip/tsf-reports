@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block title %}Редактирование NCR{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>✏️ Редактирование отчета о несоответствии #{{ ncr.id }}</h2>
+    <p style="color: #666; margin-bottom: 30px;">Номер NCR: {{ ncr.NCR_Number }}</p>
+    
+    <form method="POST" enctype="multipart/form-data">
+        <h3 style="margin-bottom: 20px; color: #2c3e50;">📋 Основная информация</h3>
+        
+        <div class="form-group">
+            <label for="NCR_Number">1. Номер NCR</label>
+            <input type="text"
+       name="NCR_Number"
+       value="{{ ncr.NCR_Number }}"
+       readonly>
+        </div>
+
+        <div class="form-group">
+    <label>Проект</label>
+    <select name="Project" class="form-select">
+        <option value="">— 2. Выберите проект —</option>
+
+        <option value="Освоения месторождения Ешлик-1 Строительства комплекса медно-обогатительной фабрики (МОФ-3) с полным технологическим циклом производства"
+            {{ 'selected' if ncr.Project == 'Освоения месторождения Ешлик-1 Строительства комплекса медно-обогатительной фабрики (МОФ-3) с полным технологическим циклом производства.Хвостовое Хозяйство Карта №1' else '' }}>
+            Освоения месторождения Ешлик-1 Строительства комплекса медно-обогатительной фабрики (МОФ-3) с полным технологическим циклом производства.Хвостовое Хозяйство Карта №1
+        </option>
+
+        <option value="Другое" {{ 'selected' if ncr.Project == 'Другое' else '' }}>
+            Другое
+        </option>
+    </select>
+</div>
+        <div class="form-group">
+            <label for="Discipline">3. Дисциплина *</label>
+            <select id="Discipline" name="Discipline" required>
+                <option value="">Выберите дисциплину</option>
+                <option value="CIV" {{ 'selected' if ncr.Discipline == 'CIV' else '' }}>CIV</option>
+                <option value="ELE" {{ 'selected' if ncr.Discipline == 'ELE' else '' }}>ELE</option>
+                <option value="PIP" {{ 'selected' if ncr.Discipline == 'PIP' else '' }}>PIP</option>
+                <option value="CCTV" {{ 'selected' if ncr.Discipline == 'CCTV' else '' }}>CCTV</option>
+                <option value="INS" {{ 'selected' if ncr.Discipline == 'INS' else '' }}>INS</option>
+                <option value="STS" {{ 'selected' if ncr.Discipline == 'STS' else '' }}>STS</option>
+            </select>
+        </div>
+    <div class="form-group">
+    <label>4. Кому выдано</label>
+    <input type="text" name="Contractor"
+           value="{{ ncr.Contractor or '' }}">
+</div>
+
+<div class="form-group">
+    <label>5. Кем выдано</label>
+    <input type="text" name="technical_supervisor_company"
+           value="{{ ncr.technical_supervisor_company or '' }}">
+</div>    
+        <div class="form-group">
+            <label for="major_object">6. Наименование объекта *</label>
+            <select id="major_object" name="major_object" required>
+                <option value="">Выберите объект</option>
+                <option value="Магистральный пульповода хвостов карты 1" {{ 'selected' if ncr.major_object == 'Магистральный пульповода хвостов карты 1' else '' }}>Магистральный пульповода хвостов карты 1</option>
+                <option value="Распределительный пульповод" {{ 'selected' if ncr.major_object == 'Распределительный пульповод' else '' }}>Распределительный пульповод</option>
+                <option value="Площадка подстанции ГПП-1 110/10кВ. ГПП-1 ПС 110/6 кВ - 2х10000" {{ 'selected' if ncr.major_object == 'Площадка подстанции ГПП-1 110/10кВ. ГПП-1 ПС 110/6 кВ - 2х10000' else '' }}>Площадка подстанции ГПП-1 110/10кВ. ГПП-1 ПС 110/6 кВ - 2х10000</option>
+                <option value="Пионерная дамба" {{ 'selected' if ncr.major_object == 'Пионерная дамба' else '' }}>Пионерная дамба</option>
+                <option value="Участок водозабора" {{ 'selected' if ncr.major_object == 'Участок водозабора' else '' }}>Участок водозабора</option>
+                <option value="Другое" {{ 'selected' if ncr.major_object == 'Другое' else '' }}>Другое</option>
+            </select>
+        </div>
+<div class="form-group">
+    <label>7. Номер чертежа</label>
+    <input type="text" name="Draw_number"
+       value="{{ ncr.Draw_number or '' }}">
+</div> 
+        
+        <div class="form-group">
+            <label for="Location">8. Конструктив / расположение / участок</label>
+            <input type="text" id="Location" name="Location" 
+                   value="{{ ncr.Location }}" required
+                   placeholder="Фундамент ФМ-2,Северная дамба">
+        </div>
+      <div class="form-group">
+            <label for="Procedure">9. Процедура</label>
+            <input type="text" id="Procedure" name="Procedure" 
+                   value="{{ ncr.Procedure }}" 
+                   placeholder="Пункты ШНК/ППР">
+        </div>
+
+
+        <div class="form-group">
+            <label for="NCR_Description">10. Описание несоответствия</label>
+            <input type="text" id="NCR_Description" name="NCR_Description" 
+                   value="{{ ncr.NCR_Description }}" required
+                   placeholder="Подробная информация обнаружения несоответствия">
+        </div>
+        
+        <div class="form-group">
+            <label for="NCR_grade">11. Оценка несоответсвия *</label>
+            <select id="NCR_grade" name="NCR_grade" required>
+                <option value="">Оцените несоответсвия</option>
+                <option value="Очень важный" {{ 'selected' if ncr.NCR_grade == 'Очень важный' else '' }}>Очень важный</option>
+                <option value="Неотложный" {{ 'selected' if ncr.NCR_grade == 'Неотложный' else '' }}>Неотложный</option>
+                <option value="Незначительный" {{ 'selected' if ncr.NCR_grade == 'Незначительный' else '' }}>Незначительный</option>
+                <option value="Несрочный" {{ 'selected' if ncr.NCR_grade == 'Несрочный' else '' }}>Несрочный</option>
+                <option value="Другое" {{ 'selected' if ncr.NCR_grade == 'Другое' else '' }}>Другое</option>
+            </select>
+        </div>
+
+
+        <div class="form-group">
+            <label for="inspection_date">12. Дата выпуска *</label>
+            <input type="date"
+       id="inspection_date"
+       name="inspection_date"
+       value="{{ ncr.inspection_date }}">
+
+        </div>
+        
+        <div class="form-group">
+            <label for="Correction_acts">13. Корректирующие действия Подрядчика</label>
+            <input type="text" id="Correction_acts" name="Correction_acts" 
+                   value="{{ ncr.Correction_acts }}" 
+                   placeholder="Указания и рекомендации по устранению несоответствий">
+        </div>
+        
+         
+
+        <div class="form-group">
+            <label for="closed_date.plan">14. Срок закрытия *</label>
+            <input type="date"
+       id="closed_date.plan"
+       name="closed_date.plan"
+       value="{{ ncr.get('closed_date.plan','') }}">
+
+        </div>           
+        
+        <div class="form-group">
+            <label for="NCR_grade">15. Меры *</label>
+            <select id="Measures" name="Measures" required>
+                <option value="Доработка" {{ 'selected' if ncr.Measures == 'Доработка' else '' }}>Доработка</option>
+                <option value="Ремонт" {{ 'selected' if ncr.Measures == 'Ремонт' else '' }}>Ремонт</option>
+                <option value="Отбраковать" {{ 'selected' if ncr.Measures == 'Отбраковать' else '' }}>Отбраковать</option>
+                <option value="Оставить как есть" {{ 'selected' if ncr.Measures == 'Оставить как есть' else '' }}>Оставить как есть</option>
+                <option value="Другое" {{ 'selected' if ncr.Measures == 'Другое' else '' }}>Другое</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="inspector_name_field">16. ФИО Инспектора</label>
+            <input type="text"
+       name="inspector_name_field"
+       value="{{ ncr.inspector_name_field }}"
+       readonly>
+        </div>
+        
+
+   <p>
+    <strong>Статус:</strong>
+    {% if ncr.NCR_Status == 'Закрыто' %}
+        <span style="color:green;">✅ Закрыто</span>
+    {% else %}
+        <span style="color:#b45309;">⚠ Открыто</span>
+    {% endif %}
+</p>
+        
+
+        <!-- Информация о создании -->
+        <div class="row mb-3" style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+            <div class="col-md-6">
+                <label class="form-label" style="font-weight: bold;">👨‍💼 Создал:</label>
+                <input type="text" class="form-control" value="{{ ncr.inspector_name }}" readonly>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" style="font-weight: bold;">📅 Дата создания:</label>
+                <input type="text" class="form-control" value="{{ ncr.created_at }}" readonly>
+            </div>
+        </div>
+        
+        <hr>
+
+        <h3>📷 фотографии</h3>
+
+        {% if ncr.photos %}
+<div style="display:flex; gap:15px; flex-wrap:wrap;">
+
+    {% for photo in ncr.photos %}
+    <div style="position:relative; display:inline-block;">
+
+        <img src="{{ url_for('static', filename='uploads/ncr_photos/' ~ photo) }}"
+             style="height:130px; border:1px solid #ccc; border-radius:4px;">
+
+        <!-- ❌ УДАЛЕНИЕ ФОТО -->
+        <button type="submit"
+                formaction="{{ url_for('delete_ncr_photo', ncr_id=ncr.id, filename=photo) }}"
+                formmethod="POST"
+                class="btn btn-danger btn-sm"
+                style="
+                    position:absolute;
+                    top:5px;
+                    right:5px;
+                    padding:2px 6px;
+                    font-size:12px;
+                "
+                title="Удалить фото">
+            ❌
+        </button>
+
+    </div>
+    {% endfor %}
+
+</div>
+{% endif %}
+
+
+
+        <h4>➕ Добавить новые фото</h4>
+        <input type="file" name="photos" multiple accept="image/*">
+
+        <br><br>
+        <hr>
+        
+
+<h4>📎 Подписанный скан NCR (SharePoint)</h4>
+
+<div class="form-group">
+    <label>Ссылка на подписанный документ</label>
+    <input type="url"
+           name="signed_scan_url"
+           class="form-control"
+           placeholder="https://company.sharepoint.com/..."
+           value="{{ ncr.signed_scan_url or '' }}">
+<small class="text-muted">
+    Вставьте ссылку после загрузки подписанного документа в SharePoint
+</small>
+</div>
+{% if ncr.signed_scan_url %}
+    <button type="submit"
+            name="remove_signed_scan"
+            value="1"
+            class="btn btn-sm btn-outline-danger"
+            style="margin-top:8px;">
+        ❌ Удалить ссылку
+    </button>
+{% endif %}
+{% if ncr.NCR_Status != 'Закрыто' and ncr.signed_scan_url %}
+<button type="submit"
+        name="close_ncr"
+        value="1"
+        class="btn btn-danger"
+        style="margin-top:10px;"
+        onclick="return confirm('⚠️ После закрытия NCR редактирование будет невозможно.\n\nВы уверены, что хотите закрыть предписание?');">
+    🔒 Закрыть предписание
+</button>
+{% endif %}
+{% if ncr.signed_scan_url %}
+    <p style="margin-top:6px;">
+        ✅ Документ загружен:
+        <a href="{{ ncr.signed_scan_url }}" target="_blank">
+            Открыть
+        </a><br>
+        <small>
+            {{ ncr.signed_scan_uploaded_by }}
+            · {{ ncr.signed_scan_uploaded_at }}
+        </small>
+    </p>
+    
+{% else %}
+    <p style="color:#b45309;">❗ Подписанный скан не загружен</p>
+{% endif %}
+        <button type="submit" class="btn btn-success">💾 Сохранить изменения</button>
+        <a href="{{ url_for('ncr_list') }}" class="btn btn-secondary">🔙 Назад</a>
+<a href="{{ url_for('print_ncr', ncr_id=ncr.id) }}"
+   target="_blank"
+   class="btn btn-outline-secondary">
+   🖨️ Печать NCR
+   
+</a>
+    </form>
+
+
+
+</div>
+{% endblock %}

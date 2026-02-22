@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>NCR {{ ncr.NCR_Number }}</title>
+
+
+<style>
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #1f2937;
+}
+
+.header {
+    background: #475569;
+    color: #fff;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+td {
+    padding: 6px;
+    border-bottom: 1px solid #475569;
+    vertical-align: top;
+}
+
+.label {
+    font-weight: bold;
+    width: 18%;
+    background: transparent;
+}
+
+
+.section-header {
+    background: #475569;
+    color: #fff;
+    font-weight: bold;
+    padding: 6px 10px;
+    border: 1px solid #475569;
+    margin-top: 14px;
+}
+
+.section-body {
+    border: 1px solid #475569;
+    border-top: none;
+    padding: 10px;
+    min-height: 90px;
+}
+.no-lines td {
+    border-bottom: none !important;
+}
+
+@page {
+    margin: 15mm 15mm 20mm 15mm;
+
+    @bottom-right {
+        content: "Предписание № {{ ncr.NCR_Number }} | Стр. " counter(page);
+        font-size: 11px;
+        color: #475569;
+    }
+}
+.signatures-block {
+    margin-top: 13px;   /* регулируй: 15–30px */
+}
+.no-page-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+</style>
+
+
+</head>
+
+<body>
+
+<div class="header" style="display:flex; justify-content:space-between; align-items:center;">
+    <div>
+        Предписание №
+        <span style="font-size:12px;">{{ ncr.NCR_Number }}</span>
+    </div>
+
+    <img src="{{ url_for('static', filename='images/logo5.png') }}"
+         style="height:40px; background:#475569; padding:4px; border-radius:4px;">
+</div>
+
+
+
+
+<table>
+    <tr>
+        <td class="label">№ Предписания: </td>
+        <td colspan="3">
+            {{ ncr.NCR_Number | replace('\n', '<br>') | safe }}
+        </td>
+    </tr>
+    <tr>
+        <td class="label">Проект</td>
+        <td colspan="3">
+            {{ ncr.Project | replace('\n', '<br>') | safe }}
+        </td>
+    </tr>
+    <tr>
+        <td class="label">Объект</td>
+        <td colspan="3">
+            {{ ncr.major_object | replace('\n', '<br>') | safe }}
+        </td>
+    </tr>
+    <tr>
+        <td class="label">Дисциплина</td>
+        <td>{{ ncr.Discipline or '-' }}</td>
+        <td class="label">Чертеж</td>
+        <td>{{ ncr.Draw_number or '-' }}</td>
+    </tr>
+    <tr>
+        <td class="label">Кому выдано</td>
+        <td>{{ ncr.Contractor or '-' }}</td>
+        <td class="label">Участок/конструктив</td>
+        <td>{{ ncr.Location or '-' }}</td>
+    </tr>
+    <tr>
+        <td class="label">Кем выдано</td>
+        <td>{{ ncr.technical_supervisor_company or '-' }}</td>
+        <td class="label">Процедура</td>
+        <td>{{ ncr.Procedure or '-' }}</td>
+    </tr>
+    <tr>
+        <td class="label">Дата выпуска</td>
+        <td>{{ ncr.inspection_date or '-' }}</td>
+        <td class="label">Срок закрытия</td>
+        <td>{{ ncr.get('closed_date.plan', '') }}</td>
+    </tr>
+
+</table>
+
+<div class="section-header">
+    Описание требований и фактического состояния
+</div>
+<div class="section-body">
+    {{ ncr.NCR_Description or '-' }}
+</div>
+    
+
+
+<table class="no-lines signatures-block">
+    <tr>
+        <td class="label">Выдано (ТН ПО АГМК)</td>
+        <td>{{ ncr.inspector_name_field or '-' }}</td>
+        <td class="label">Утверждено (Заказчик)</td>
+        <td>______________________</td>
+        <td class="label">Получено (Подрядчик)</td>
+        <td>______________________</td>
+    </tr>
+
+    <tr class="signature">
+        <td>Подпись</td>
+        <td>______________________</td>
+        <td>Подпись</td>
+        <td>______________________</td>
+        <td>Подпись</td>
+        <td>______________________</td>
+    </tr>
+
+    <tr>
+        <td>Дата</td>
+        <td>____.__.____</td>
+        <td>Дата</td>
+        <td>____.__.____</td>
+        <td>Дата</td>
+        <td>____.__.____</td>
+    </tr>
+</table>
+
+
+
+<table>
+    <tr>
+        <td class="label">Оценка</td>
+        <td>{{ ncr.NCR_grade or '-' }}</td>
+
+        </td>
+        <td class="label">Меры</td>
+        <td>{{ ncr.Measures or '-' }}</td>
+    </tr>
+</table>
+
+        <div class="section-header">
+    Корректирующие действия подрядчика
+</div>
+<div class="section-body">
+    {{ ncr.Correction_acts or '-' }}
+</div>
+
+
+<table class="no-lines signatures-block">
+    <tr>
+        <td class="label">Выдано (Подрядчик)</td>
+        <td>______________________</td>
+
+        <td class="label">Утверждено (ТН ПО АГМК)</td>
+        <td>______________________</td>
+    </tr>
+
+    <tr class="signature">
+        <td>Подпись</td>
+        <td>______________________</td>
+        <td>Подпись</td>
+        <td>______________________</td>
+    </tr>
+
+    <tr>
+        <td>Дата</td>
+        <td>____.__.____</td>
+        <td>Дата</td>
+        <td>____.__.____</td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td class="label">Подтверждение результата:</td>
+        <td>
+
+            ☐ Удовлетворённый
+            ☐ Неудовлетворённый
+        </td>
+    </tr>
+</table>
+<table class="no-lines signatures-block">
+    <tr>
+        <td class="label">Выдано (Подрядчик)</td>
+        <td>______________________</td>
+
+        <td class="label">Утверждено (ТН ПО АГМК)</td>
+        <td>______________________</td>
+    </tr>
+
+    <tr class="signature">
+        <td>Подпись</td>
+        <td>______________________</td>
+        <td>Подпись</td>
+        <td>______________________</td>
+    </tr>
+
+    <tr>
+        <td>Дата</td>
+        <td>____.__.____</td>
+        <td>Дата</td>
+        <td>____.__.____</td>
+    </tr>
+</table>
+<h3>📷 Photo </h3>
+
+{% if ncr.photos %}
+<div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:15px;">
+    {% for photo in ncr.photos %}
+        <img src="{{ url_for('static', filename='uploads/ncr_photos/' ~ photo) }}"
+             style="width:100%; border:1px solid #000;">
+    {% endfor %}
+</div>
+{% else %}
+<p>Фото отсутствуют</p>
+{% endif %}
+
+<script>
+    window.onload = function () {
+        window.print();
+    };
+</script>
+
+</body>
+</html>

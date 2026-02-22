@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Монтажные инспекции{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>🔩 Монтажные инспекции</h2>
+        <div style="display: flex; gap: 10px;">
+            <a href="{{ url_for('export_civil', status=current_status, decision=current_decision, date_from=current_date_from, date_to=current_date_to) }}" class="btn btn-success">📊 Excel</a>
+            <a href="/new_civil" class="btn btn-civil">➕ Новая монтажная</a>
+        </div>
+    </div>
+
+    <!-- ФИЛЬТРЫ -->
+    <div class="card" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa;">
+        <form method="GET" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: end;">
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">🔄 Статус:</label>
+                <select name="status" class="form-select" style="min-width: 150px;">
+                    <option value="">Все статусы</option>
+                    <option value="В работе" {{ 'selected' if current_status == 'В работе' else '' }}>🔄 В работе</option>
+                    <option value="Завершено" {{ 'selected' if current_status == 'Завершено' else '' }}>✅ Завершено</option>
+                    <option value="Приостановлено" {{ 'selected' if current_status == 'Приостановлено' else '' }}>⏸️ Приостановлено</option>
+                </select>
+            </div>
+            
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">✅ Решение:</label>
+                <select name="decision" class="form-select" style="min-width: 150px;">
+                    <option value="">Все решения</option>
+                    <option value="Принято" {{ 'selected' if current_decision == 'Принято' else '' }}>✅ Принято</option>
+                    <option value="Принято с замечаниями" {{ 'selected' if current_decision == 'Принято с замечаниями' else '' }}>⚠️ С замечаниями</option>
+                    <option value="Отклонено" {{ 'selected' if current_decision == 'Отклонено' else '' }}>❌ Отклонено</option>
+                    <option value="Требует доработки" {{ 'selected' if current_decision == 'Требует доработки' else '' }}>🔧 Требует доработки</option>
+                    <option value="На рассмотрении" {{ 'selected' if current_decision == 'На рассмотрении' else '' }}>⏳ На рассмотрении</option>
+                </select>
+            </div>
+            
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">📅 Дата от:</label>
+                <input type="date" name="date_from" class="form-control" value="{{ current_date_from }}" style="min-width: 150px;">
+            </div>
+            
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">📅 Дата до:</label>
+                <input type="date" name="date_to" class="form-control" value="{{ current_date_to }}" style="min-width: 150px;">
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-primary">🔍 Фильтровать</button>
+                <a href="{{ url_for('civil_list') }}" class="btn btn-secondary">🔄 Сбросить</a>
+            </div>
+        </form>
+    </div>
+
+    {% if inspections %}
+        <div style="overflow-x: auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Проект</th>
+                        <th>Укрупненный объект</th>
+                        <th>Пакет работ</th>
+                        <th>Объект</th>
+                        <th>Участок</th>
+                        <th>Название работы</th>
+                        <th>Подробное описание</th>
+                        <th>Номер лабораторного протокола</th>
+                        <th>Кол-во изделий</th>
+                        <th>Маркировка</th>
+                        <th>Номер RFI</th>
+                        <th>Пикетаж от</th>
+                        <th>Пикетаж до</th>
+                        <th>Статус RFI</th>
+                        <th>Дата проведения инспекции</th>
+                        <th>ФИО Инспектора</th>
+                        <th>Decision/решения</th>
+                        <th>Комментарии при отклонениях</th>
+                        <th>Номер ИТД</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inspection in inspections %}
+                    <tr>
+                        <td>{{ inspection.id }}</td>
+                        <td><strong>{{ inspection.project or '-' }}</strong></td>
+                        <td><strong>{{ inspection.major_object or '-' }}</td>
+                        <td>{{ inspection.work_package or '-' }}</td>
+                        <td>{{ inspection.object or '-' }}</td>
+                        <td>{{ inspection.section or '-' }}</td>
+                        <td>{{ inspection.work_name or '-' }}</td>
+                        <td>{{ inspection.work_description or '-' }}</td>
+                        <td>{{ inspection.laboratory_number or '-' }}</td>
+                        <td>{{ inspection.quantity or '-' }}</td>
+                        <td>{{ inspection.marking or '-' }}</td>
+                        <td>{{ inspection.RFI_number or '-' }}</td>
+                        <td>{{ inspection.picket_from or '-' }}</td>
+                        <td>{{ inspection.picket_to or '-' }}</td>
+                        <td>
+                            {% if inspection.RFI_status %}
+                                {% if inspection.RFI_status == 'Утвержден' %}
+                                    <span style="color: #27ae60;">✅ Утвержден</span>
+                                {% elif inspection.RFI_status == 'Не утвержден' %}
+                                    <span style="color: #e74c3c;">❌ Не утвержден</span>
+                                {% elif inspection.RFI_status == 'Отложено' %}
+                                    <span style="color: #f39c12;">⏸️ Отложено</span>
+                                {% else %}
+                                    <span style="color: #3498db;">{{ inspection.RFI_status }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span style="color: #95a5a6;">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ inspection.inspection_date or '-' }}</td>
+                        <td>{{ inspection.inspector_name_field or '-' }}</td>
+                        <td>
+                            {% if inspection.decision %}
+                                {% if inspection.decision == 'Принято' %}
+                                    <span style="color: #27ae60;">✅ Принято</span>
+                                {% elif inspection.decision == 'Отклонено' %}
+                                    <span style="color: #e74c3c;">❌ Отклонено</span>
+                                {% elif inspection.decision == 'Принято с замечаниями' %}
+                                    <span style="color: #f39c12;">⚠️ С замечаниями</span>
+                                {% elif inspection.decision == 'Требует доработки' %}
+                                    <span style="color: #9b59b6;">🔧 Требует доработки</span>
+                                {% elif inspection.decision == 'На рассмотрении' %}
+                                    <span style="color: #3498db;">⏳ На рассмотрении</span>
+                                {% else %}
+                                    <span style="color: #3498db;">{{ inspection.decision }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span style="color: #95a5a6;">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ inspection.deviation_comments or '-' }}</td>
+                        <td>{{ inspection.executive_number or '-' }}</td>
+                        <td>
+                        
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                <a href="{{ url_for('edit_civil', inspection_id=inspection.id) }}" class="btn btn-warning btn-sm">
+                                    ✏️ Редактировать
+                                
+                                <a href="/export_inspection/civil/{{ inspection.id }}" class="btn btn-info btn-sm">
+                                    💾 Экспорт  
+                                </a>        
+                                </a>
+                                <form method="POST" action="{{ url_for('delete_civil', inspection_id=inspection.id) }}" style="display: inline;" onsubmit="return confirm('Вы уверены, что хотите удалить инспекцию #{{ inspection.id }}?')">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        🗑️ Удалить
+                                  
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 40px; color: #666;">
+            <div style="font-size: 3em; margin-bottom: 15px;">🔩</div>
+            <h3>Монтажных инспекций пока нет</h3>
+            <p>Создайте первую монтажную инспекцию!</p>
+            <a href="/new_civil" class="btn btn-civil" style="margin-top: 15px;">Создать инспекцию</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

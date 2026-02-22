@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Список отчетов по технике{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📋 Отчеты по технике</h2>
+    <p style="color: #666; margin-bottom: 30px;">История сменных отчетов</p>
+    
+    <!-- Фильтры -->
+    <div class="card" style="margin-bottom: 30px; padding: 20px; background: #f8f9fa;">
+        <h3 style="margin-bottom: 15px;">🔍 Фильтры</h3>
+        <form method="GET" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: end;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Дата от:</label>
+                <input type="date" name="date_from" value="{{ current_date_from }}">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Дата до:</label>
+                <input type="date" name="date_to" value="{{ current_date_to }}">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Смена:</label>
+                <select name="shift">
+                    <option value="">Все смены</option>
+                    <option value="День" {{ 'selected' if current_shift == 'День' else '' }}>День</option>
+                    <option value="Ночь" {{ 'selected' if current_shift == 'Ночь' else '' }}>Ночь</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Применить</button>
+            <a href="/equipment/reports" class="btn btn-secondary">Сбросить</a>
+        </form>
+    </div>
+    
+    <!-- Кнопки действий -->
+    <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="/equipment/new_report" class="btn btn-success">➕ Новый отчет</a>
+        <a href="/equipment/export{% if current_date_from or current_date_to or current_shift %}?{% if current_date_from %}date_from={{ current_date_from }}{% endif %}{% if current_date_to %}&date_to={{ current_date_to }}{% endif %}{% if current_shift %}&shift={{ current_shift }}{% endif %}{% endif %}" 
+           class="btn btn-warning">📤 Экспорт в Excel</a>
+    </div>
+    
+    {% if reports %}
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Дата</th>
+                    <th>Смена</th>
+                    <th>Инспектор</th>
+                    <th>Всего техники</th>
+                    <th>В работе</th>
+                    <th>Эффективность</th>
+                    <th>В ремонте</th>
+                    <th>Создан</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td><strong>{{ report.id }}</strong></td>
+                    <td>{{ report.date }}</td>
+                    <td>
+                        <span class="badge badge-{{ 'warning' if report.shift == 'День' else 'info' }}">
+                            {{ '🌅' if report.shift == 'День' else '🌙' }} {{ report.shift }}
+                        </span>
+                    </td>
+                    <td>{{ report.inspector_name }}</td>
+                    <td>{{ report.totals.total_available }}</td>
+                    <td>{{ report.totals.total_working }}</td>
+                    <td>
+                        <span class="badge badge-{% if report.totals.efficiency_percent >= 70 %}success{% elif report.totals.efficiency_percent >= 50 %}warning{% else %}danger{% endif %}">
+                            {{ report.totals.efficiency_percent }}%
+                        </span>
+                    </td>
+                    <td>{{ report.totals.total_repair }}</td>
+                    <td>{{ report.created_at.split(' ')[1][:5] if ' ' in report.created_at else report.created_at }}</td>
+                    <td>
+                        <a href="/equipment/report/{{ report.id }}" class="btn btn-info btn-sm">👁️ Просмотр</a>
+                        <a href="/equipment/report/{{ report.id }}/edit" class="btn btn-primary btn-sm">✏️ Изменить</a>
+                        <button onclick="deleteReport({{ report.id }})" class="btn btn-danger btn-sm">🗑️ Удалить</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <h4>📭 Отчеты не найдены</h4>
+        <p>Создайте первый сменный отчет по технике.</p>
+        <a href="/equipment/new_report" class="btn btn-success">➕ Создать отчет</a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function deleteReport(reportId) {
+    if (confirm('Вы уверены, что хотите удалить этот отчет?')) {
+        fetch(`/equipment/report/${reportId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                location.reload();
+            } else {
+                alert('Ошибка при удалении: ' + result.error);
+            }
+        })
+        .catch(error => {
+            alert('Ошибка: ' + error);
+        });
+    }
+}
+</script>
+
+<style>
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.badge-success { background: #28a745; color: white; }
+.badge-warning { background: #ffc107; color: black; }
+.badge-danger { background: #dc3545; color: white; }
+.badge-info { background: #17a2b8; color: white; }
+
+.table-container {
+    overflow-x: auto;
+}
+
+.alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+</style>
+{% endblock %}

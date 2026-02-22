@@ -1,0 +1,24 @@
+[
+  {
+    "project": "",
+    "major_object": "Хвостовое хозяйство Карта №1",
+    "work_package": "C1",
+    "object": "Распределительный пульповод",
+    "section": "Монтажные работы",
+    "work_name": "Монтаж арматуры",
+    "inspection_date": "2025-08-10T17:56",
+    "quantity_items": "13",
+    "rfi_number": "TSFS",
+    "picket_from": "",
+    "picket_to": "",
+    "inspector_name_field": "Said Djurabekov",
+    "decision": "На рассмотрении",
+    "deviation_comments": "",
+    "itd_number": "",
+    "status": "В работе",
+    "inspector_id": 2,
+    "inspector_name": "Said Djurabekov",
+    "id": 1,
+    "created_at": "2025-08-10 18:00:07"
+  }
+]

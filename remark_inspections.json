@@ -1,0 +1,20 @@
+[
+  {
+    "Discipline": "CIV",
+    "major_object": "Магистральный пульповода хвостов карты 1",
+    "remark_description": "3. Описание Замечания",
+    "link_to_normative": "4. Ссылка на нормативный документ или процедуру",
+    "inspection_date": "2025-01-24",
+    "responsible_person_cont": "6. Ответственное лицо от подрядчика",
+    "inspector_name_field": "Madiyar Adilzhanov",
+    "remark_closed_date.plan": "2026-01-25",
+    "remark_closed_date.actual": "",
+    "reason_for_reject": "10. Причина отклонения и необходимые действия по устранению замечания\r\n",
+    "Status": "Открыто",
+    "inspector_id": 1,
+    "inspector_name": "Madiyar Adilzhanov",
+    "id": 1,
+    "created_at": "2026-01-24 15:45:35",
+    "updated_at": "2026-01-24 15:50:58"
+  }
+]

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Выбор типа инспекции{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2> Выберите тип инспекции</h2>
+    <p style="color: #131313; text-align: center; margin-bottom: 40px;">Какую инспекцию хотите создать?</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 800px; margin: 0 auto;">
+    <!-- Геодезическая инспекция -->
+    <a href="/new_geodetic" style="text-decoration: none; color: inherit;">
+        <div class="card" style="text-align: center; cursor: pointer; transition: transform 0.3s; border: 2px solid #3498db;">
+            <div style="font-size: 4em; margin-bottom: 20px;">🧭</div>
+            <h3 style="color: #3498db; margin-bottom: 15px;">Геодезическая инспекция</h3>
+            <p style="color: #002b64; margin-bottom: 20px;">
+                Геодезическая сьемка участка(все инспекции)
+            </p>
+            <div class="btn btn-geodetic">Создать геодезическую</div>
+        </div>
+    </a>
+    
+    <!-- CIVIL WORKS -->
+    <a href="/new_civil" style="text-decoration: none; color: inherit;">
+        <div class="card" style="text-align: center; cursor: pointer; transition: transform 0.3s; border: 2px solid #3498db;">
+            <div style="font-size: 4em; margin-bottom: 20px;">⚙️</div>
+            <h3 style="color: #3498db; margin-bottom: 15px;">Civil works inpection</h3>
+            <p style="color: #002b64; margin-bottom: 20px;">
+                Инспекция по монтажным работам
+            </p>
+            <div class="btn btn-civil">Создать инспекцию</div>
+        </div>
+    </a>
+
+    <!-- DAILY REPORT -->
+    <a href="/daily_report" style="text-decoration: none; color: inherit;">
+        <div class="card" style="text-align: center; cursor: pointer; transition: transform 0.3s; border: 2px solid #3498db;">
+            <div style="font-size: 4em; margin-bottom: 20px;">📝</div>
+            <h3 style="color: #3498db; margin-bottom: 15px;">daily report</h3>
+            <p style="color: #002b64; margin-bottom: 20px;">
+                Ежедневный отчет от технического надзора заказчика
+            </p>
+            <div class="btn btn-civil">Создать инспекцию</div>
+        </div>
+    </a>
+
+    <!-- Non-Conformance Report -->
+    <a href="/new_ncr" style="text-decoration: none; color: inherit;">
+        <div class="card" style="text-align: center; cursor: pointer; transition: transform 0.3s; border: 2px solid #9b59b6;">
+            <div style="font-size: 4em; margin-bottom: 20px;">❌</div>
+            <h3 style="color: #3498db; margin-bottom: 15px;">Non-Conformance Report</h3>
+            <p style="color: #002b64; margin-bottom: 20px;">
+                Создание отчета о несоответствие
+            </p>
+            <div class="btn btn-ncr">Внести отчет о несоответствии</div>
+        </div>
+    </a>
+
+    <!-- Замечание -->
+    <a href="/new_remark" style="text-decoration: none; color: inherit;">
+        <div class="card" style="text-align: center; cursor: pointer; transition: transform 0.3s; border: 2px solid #9b59b6;">
+            <div style="font-size: 4em; margin-bottom: 20px;">⚠</div>
+            <h3 style="color: #3498db; margin-bottom: 15px;">Замечание</h3>
+            <p style="color: #002b64; margin-bottom: 20px;">
+                Учет, рассмотрения и устранения замечаний по качеству работ
+            </p>
+            <div class="btn btn-remark">Внести замечание</div>
+        </div>
+    </a>
+</div>
+
+
+
+<div style="text-align: center; margin-top: 30px;">
+    <a href="/" class="btn btn-danger">❌ Отмена</a>
+</div>
+
+<style>
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(110, 110, 110, 0.15);
+}
+</style>
+{% endblock %}

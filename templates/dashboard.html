@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Панель управления{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Реестр инспекции,предписаний,замечаний проекта Хвостового хранилища МОФ-3</h2>
+    
+    <p>Добро пожаловать в TSF Reports , <strong>{{ session.full_name }}</strong>!</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-number">{{ total_geodetic }}</div>
+        <div>📐 Геодезических</div>
+    </div>
+    
+    <div class="stat-card laboratory">
+        <div class="stat-number">{{ total_civil }}</div>
+        <div>⚙️ CIVIL WORKS</div>
+    </div>
+    
+    <div class="stat-card civil">
+        <div class="stat-number">{{ total_ncr }}</div>
+        <div>❌ NCR</div>
+    </div>
+    
+    <div class="stat-card civil">
+        <div class="stat-number">{{ total_remark }}</div>
+        <div>⚠ Замечании</div>
+    </div>
+    
+    
+</div>
+
+
+
+<div class="card">
+    <h3> Быстрые действия</h3>
+    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px;">
+        <a href="/choose_type" class="btn btn-success">➕ Новая инспекция</a>
+        <a href="/geodetic_list" class="btn btn-geodetic">🏗️ Геодезические</a>
+        <a href="/civil_list" class="btn btn-civil">⚙️ CIVIL WORKS</a>
+        <a href="/ncr_list" class="btn btn-ncr">❌ NCR</a>
+        <a href="/remark_list" class="btn btn-remark">⚠ Замечании</a>
+        <a href="{{ url_for('daily_report_list') }}" class="btn btn-outline-success">
+            <i class="fas fa-calendar-day"></i> Ежедневные отчеты ({{ total_daily or 0 }})
+        </a>
+    </div>
+</div>
+{% endblock %}

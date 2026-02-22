@@ -1,0 +1,27 @@
+[
+  {
+    "project": "Хвостовое хозяйство Карта №1",
+    "major_object": "Распределительный пульповод",
+    "work_package": "C1",
+    "object": "Распределительный пульповод",
+    "section": "1",
+    "work_name": "1",
+    "work_description": "1",
+    "laboratory_number": "1",
+    "quantity": "1",
+    "marking": "1",
+    "RFI_number": "1",
+    "picket_from": "1",
+    "picket_to": "1",
+    "RFI_status": "Не утвержден",
+    "inspection_date": "2026-01-24T15:31",
+    "inspector_name_field": "Madiyar Adilzhanov",
+    "decision": "Требует доработки",
+    "deviation_comments": "1",
+    "executive_number": "1",
+    "inspector_id": 1,
+    "inspector_name": "Madiyar Adilzhanov",
+    "id": 2,
+    "created_at": "2026-01-24 15:32:15"
+  }
+]
