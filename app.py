@@ -47,7 +47,12 @@ def generate_ncr_number():
     
 def get_weather_data():
     """Получение данных о погоде с кэшированием"""
-    current_time = datetime.now().isoformat()
+    current_time = datetime.now().timestamp()
+
+if (
+    weather_cache['timestamp'] = current_time
+    and current_time - weather_cache['timestamp'] < WEATHER_CONFIG['cache_duration']
+):
 
     
     # Проверяем кэш
@@ -101,15 +106,14 @@ try:
     # Настройки экспорта
     EXPORT_CONFIG = {
         'local_folder': 'exports',
-        'network_folder': r'\\server\shared\reports', 
+        'network_folder': None, 
         'email_enabled': False,  # Пока отключено
         'email_config': 'corporate'  # gmail, outlook, corporate
     }
     
     
     export_manager = FileExportManager(
-        export_folder=EXPORT_CONFIG['local_folder'],
-        network_folder=EXPORT_CONFIG.get('network_folder')
+        export_folder='exports'
     )
     
     print("✅ Система экспорта загружена")
@@ -1529,4 +1533,5 @@ def create_test_users():
 
 if __name__ == '__main__':  
     app.run(debug=True)
+
 
