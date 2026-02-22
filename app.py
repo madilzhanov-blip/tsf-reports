@@ -25,43 +25,21 @@ WEATHER_CONFIG = {
 }
 
 
-# Кэш для погоды
+import time
+
 weather_cache = {'data': None, 'timestamp': 0}
-def generate_ncr_number():
-    prefix = "TSFS-AGMK-NCR-"
-    ncr_list = DataManager.load_data('ncr_reports')
 
-    numbers = []
-    for ncr in ncr_list:
-        num = ncr.get('NCR_Number', '')
-        if num.startswith(prefix):
-            try:
-                numbers.append(int(num.replace(prefix, '')))
-            except ValueError:
-                pass
-
-    next_number = max(numbers) + 1 if numbers else 1
-    return prefix + f"{next_number:04d}"
-
-
-    
 def get_weather_data():
-    """Получение данных о погоде с кэшированием"""
-    current_time = datetime.now().timestamp()
+    current_time = time.time()
 
-if (
-    weather_cache['timestamp'] = current_time
-    and current_time - weather_cache['timestamp'] < WEATHER_CONFIG['cache_duration']
-):
-
-    
-    # Проверяем кэш
-    if (weather_cache['data'] and 
-        current_time - weather_cache['timestamp'] < WEATHER_CONFIG['cache_duration']):
+    if (
+        weather_cache['data']
+        and current_time - weather_cache['timestamp'] < WEATHER_CONFIG['cache_duration']
+    ):
         return weather_cache['data']
-    
+
     try:
-        url = f"https://api.openweathermap.org/data/2.5/weather"
+        url = "https://api.openweathermap.org/data/2.5/weather"
         params = {
             'lat': WEATHER_CONFIG['lat'],
             'lon': WEATHER_CONFIG['lon'],
@@ -69,22 +47,25 @@ if (
             'units': 'metric',
             'lang': 'ru'
         }
-        
+
         response = requests.get(url, params=params, timeout=5)
         data = response.json()
-        
-        weather_text = f"{data['weather'][0]['description'].title()}, {round(data['main']['temp'])}°C, влажность {data['main']['humidity']}%, ветер {data['wind']['speed']} м/с"
-        
-        # Обновляем кэш
+
+        weather_text = (
+            f"{data['weather'][0]['description'].title()}, "
+            f"{round(data['main']['temp'])}°C, "
+            f"влажность {data['main']['humidity']}%, "
+            f"ветер {data['wind']['speed']} м/с"
+        )
+
         weather_cache['data'] = weather_text
         weather_cache['timestamp'] = current_time
-        
+
         return weather_text
-        
+
     except Exception as e:
         print(f"Ошибка получения погоды: {e}")
         return "Не удалось получить данные о погоде"
-
 
 try:
     from word_export_manager import DailyReportWordExporter
@@ -1533,5 +1514,6 @@ def create_test_users():
 
 if __name__ == '__main__':  
     app.run(debug=True)
+
 
 
