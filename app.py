@@ -1,4 +1,3 @@
-from sharepoint_connector import SharePointConnector
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 from flask import send_file
@@ -133,6 +132,27 @@ app = Flask(__name__)
 app.secret_key = 'inspection_system_2025'
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB
 
+sp_connector = None
+
+if all([
+    os.getenv("SP_TENANT_ID"),
+    os.getenv("SP_CLIENT_ID"),
+    os.getenv("SP_CLIENT_SECRET"),
+    os.getenv("SP_SITE_URL"),
+]):
+    try:
+        from sharepoint_connector import SharePointConnector
+        sp_connector = SharePointConnector(
+            tenant_id=os.getenv("SP_TENANT_ID"),
+            client_id=os.getenv("SP_CLIENT_ID"),
+            client_secret=os.getenv("SP_CLIENT_SECRET"),
+            site_url=os.getenv("SP_SITE_URL"),
+        )
+        print("✅ SharePoint подключен")
+    except Exception as e:
+        sp_connector = None
+        print("⚠️ SharePoint отключен:", e)
+        
 DATA_FILES = {
     'users': 'inspectors.json',
     'geodetic_inspections': 'geodetic_inspections.json',
@@ -1483,6 +1503,9 @@ def api_weather():
 @app.route('/debug_data')
 @login_required
 
+@app.route("/healthz")
+def healthz():
+    return "ok", 200
 
 def create_test_users():
     """Создание тестовых пользователей"""
@@ -1509,48 +1532,11 @@ def create_test_users():
         DataManager.save_data('users', test_users)
         print("✅ Созданы тестовые пользователи")
 
-# Импорт SharePoint коннектора
-try:
-    from sharepoint_connector import SharePointConnector, test_libraries
-    SHAREPOINT_AVAILABLE = True
-except ImportError:
-    SHAREPOINT_AVAILABLE = False
-    print("⚠️ SharePoint модуль не найден")
 
-# Тестовые настройки SharePoint 
-SHAREPOINT_CONFIG = {
-    'tenant_id': 'TEST_TENANT_ID',
-    'client_id': 'TEST_CLIENT_ID', 
-    'client_secret': 'TEST_CLIENT_SECRET',
-    'site_url': 'test.sharepoint.com:/sites/test'
-}
 
-@app.route('/test_sharepoint_libs')
-@login_required
-def test_sharepoint_libs():
-    """Тестирование SharePoint библиотек"""
-    if not SHAREPOINT_AVAILABLE:
-        flash('❌ SharePoint модуль не доступен', 'error')
-        return redirect(url_for('dashboard'))
-    
-    try:
-        success = test_libraries()
-        if success:
-            flash('✅ Все SharePoint библиотеки работают!', 'success')
-        else:
-            flash('❌ Проблемы с библиотеками SharePoint', 'error')
-    except Exception as e:
-        flash(f'❌ Ошибка тестирования: {str(e)}', 'error')
-    
-    return redirect(url_for('dashboard'))
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
-    
-    create_test_users()
-    
-    print("🏗️🧪 Запуск системы инспекций...")
-    print("👤 Логины: madiyar/123456, said777/123456")
-    print("🌐 http://127.0.0.1:5000")
-    
+
+
+
+if __name__ == '__main__':  
     app.run(debug=True)
