@@ -118,13 +118,6 @@ except ImportError as e:
     export_manager = None
     print(f"⚠️ Система экспорта недоступна: {e}")
 
-try:
-    from sharepoint_connector import SharePointConnector, test_libraries
-    SHAREPOINT_AVAILABLE = True
-    print("✅ SharePoint модуль загружен")
-except ImportError as e:
-    SHAREPOINT_AVAILABLE = False
-    print(f"⚠️ SharePoint модуль не найден: {e}")
 
 
 
@@ -1401,13 +1394,7 @@ def new_ncr():
     generated_contractor=get_last_contractor(),
     generated_technical_supervisor_company=get_last_technical_supervisor_company()
 )
-    DataManager.add_record('ncr_reports', ncr_report)
-    notify_new_ncr(ncr_report)
-
-    return render_template(
-        'new_ncr.html',
-        generated_ncr_number=generated_ncr_number
-    )
+   
 
 
 
@@ -1502,6 +1489,8 @@ def api_weather():
 
 @app.route('/debug_data')
 @login_required
+def debug_data():
+    return "ok"
 
 @app.route("/healthz")
 def healthz():
@@ -1540,3 +1529,4 @@ def create_test_users():
 
 if __name__ == '__main__':  
     app.run(debug=True)
+
