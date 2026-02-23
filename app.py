@@ -1302,6 +1302,34 @@ def new_remark():
     
     return render_template('new_remark.html')
 
+
+def generate_ncr_number():
+    prefix = "TSFS-AGMK-NCR-"
+    try:
+        ncr_list = DataManager.load_data('ncr_reports')
+    except Exception:
+        return prefix + "0001"
+
+    numbers = []
+    for ncr in ncr_list:
+        num = ncr.get('NCR_Number', '')
+        if num.startswith(prefix):
+            try:
+                numbers.append(int(num.replace(prefix, '')))
+            except ValueError:
+                pass
+
+    next_number = max(numbers) + 1 if numbers else 1
+    return prefix + f"{next_number:04d}"
+def get_last_contractor():
+    ncr_list = DataManager.load_data('ncr_reports')
+    return ncr_list[-1].get('Contractor', '') if ncr_list else ''
+
+
+def get_last_technical_supervisor_company():
+    ncr_list = DataManager.load_data('ncr_reports')
+    return ncr_list[-1].get('technical_supervisor_company', '') if ncr_list else ''
+    
 @app.route('/new_ncr', methods=['GET', 'POST'])
 @login_required
 def new_ncr():
@@ -1311,30 +1339,8 @@ def new_ncr():
         print("Ошибка генерации NCR:", e)
         flash("Ошибка генерации номера NCR", "error")
         return redirect(url_for('dashboard'))
-    def generate_ncr_number():
-    prefix = "TSFS-AGMK-NCR-"
-    try:
-        ncr_list = DataManager.load_data('ncr_reports')
-    except Exception as e:
-        print("Ошибка загрузки NCR:", e)
-        return prefix + "0001"
-
-    numbers = []
-
-    for ncr in ncr_list:
-        num = ncr.get('NCR_Number', '')
-        if num.startswith(prefix):
-            try:
-                numbers.append(int(num.replace(prefix, '')))
-            except ValueError:
-                continue  # пропускаем битые номера
-
-    next_number = max(numbers) + 1 if numbers else 1
-    return prefix + f"{next_number:04d}"
-    
 
     if request.method == 'POST':
-
         ncr_report = {
             'NCR_Number': generated_ncr_number,
             'Project': request.form.get('Project', ''),
@@ -1362,13 +1368,9 @@ def new_ncr():
         if not DataManager.add_record('ncr_reports', ncr_report):
             flash('❌ Ошибка при создании отчета', 'error')
             return redirect(url_for('new_ncr'))
-        flash(
-    '⚠️ Внимание: NCR необходимо распечатать, подписать подрядчиком, '
-    'отсканировать (вложить по адресу: PMO-AGMK\Tailing dams (XX) - Документы\. TSF reports\Файлы по ТН\Предписания\Сканы предписания) , сделать рассылку после подписания.',
-    'warning'
-)
 
-        # фото — без изменений
+        flash('⚠️ NCR необходимо распечатать, подписать подрядчиком и загрузить скан', 'warning')
+
         all_ncr = DataManager.load_data('ncr_reports')
         ncr_id = max(all_ncr, key=lambda x: x['id'])['id']
 
@@ -1388,25 +1390,13 @@ def new_ncr():
 
         flash(f'✅ Отчет {generated_ncr_number} создан!', 'success')
         return redirect(url_for('ncr_list'))
-    def get_last_contractor():
-        ncr_list = DataManager.load_data('ncr_reports')
-        if not ncr_list:
-            return ''
-        return ncr_list[-1].get('Contractor', '')
-    def get_last_technical_supervisor_company():
-        ncr_list = DataManager.load_data('ncr_reports')
-        if not ncr_list:
-            return ''
-        return ncr_list[-1].get('technical_supervisor_company', '')
-    
 
     return render_template(
-    'new_ncr.html',
-    generated_ncr_number=generate_ncr_number(),
-    generated_contractor=get_last_contractor(),
-    generated_technical_supervisor_company=get_last_technical_supervisor_company()
-)
-   
+        'new_ncr.html',
+        generated_ncr_number=generated_ncr_number,
+        generated_contractor=get_last_contractor(),
+        generated_technical_supervisor_company=get_last_technical_supervisor_company()
+    )
 
 
 
@@ -1541,6 +1531,7 @@ def create_test_users():
 
 if __name__ == '__main__':  
     app.run(debug=True)
+
 
 
 
