@@ -135,7 +135,7 @@ DATA_FILES = {
     'users': 'inspectors.json',
     'geodetic_inspections': 'geodetic_inspections.json',
     'civil_inspections': 'civil_inspections.json',
-    'ncr_reports': 'ncr_reports.json',
+    '_reports': '_reports.json',
     'remark_inspections': 'remark_inspections.json',
     'daily_reports': 'daily_reports.json' 
 }
@@ -336,11 +336,11 @@ def create_excel_file(data, inspection_type):
             ws.cell(row=row, column=17, value=inspection.get('created_at', ''))
     
     
-    elif inspection_type == "NCR":
+    elif inspection_type == "":
         headers = [
-            "№", "Номер NCR", "Дисциплина", "Наименование объекта", "Конструктив / расположение / участок", 
+            "№", "Номер ", "Дисциплина", "Наименование объекта", "Конструктив / расположение / участок", 
             "Описание несоответствия", "Дата выпуска", "Корректирующие действия Подрядчика", "Планируемая дата закрытия", 
-            "Фактическая дата закрытия",  "ФИО Инспектора", "Статус NCR", "Кто создал", "Дата создания"
+            "Фактическая дата закрытия",  "ФИО Инспектора", "Статус ", "Кто создал", "Дата создания"
         ]
         
    
@@ -351,21 +351,21 @@ def create_excel_file(data, inspection_type):
             cell.alignment = header_alignment
         
 
-        for row, ncr in enumerate(data, 2):
-            ws.cell(row=row, column=1, value=ncr.get('id', ''))
-            ws.cell(row=row, column=2, value=ncr.get('NCR_Number', ''))
-            ws.cell(row=row, column=3, value=ncr.get('Discipline', ''))
-            ws.cell(row=row, column=4, value=ncr.get('major_object', ''))
-            ws.cell(row=row, column=5, value=ncr.get('Location', ''))
-            ws.cell(row=row, column=6, value=ncr.get('NCR_Description', ''))
-            ws.cell(row=row, column=7, value=ncr.get('inspection_date', ''))
-            ws.cell(row=row, column=8, value=ncr.get('Correction_acts', ''))
-            ws.cell(row=row, column=9, value=ncr.get('closed_date.plan', ''))
-            ws.cell(row=row, column=10, value=ncr.get('closed_date.actual', ''))
-            ws.cell(row=row, column=11, value=ncr.get('inspector_name_field', ''))
-            ws.cell(row=row, column=12, value=ncr.get('NCR_Status', ''))
-            ws.cell(row=row, column=13, value=ncr.get('inspector_name', ''))
-            ws.cell(row=row, column=14, value=ncr.get('created_at', ''))
+        for row,  in enumerate(data, 2):
+            ws.cell(row=row, column=1, value=.get('id', ''))
+            ws.cell(row=row, column=2, value=.get('_Number', ''))
+            ws.cell(row=row, column=3, value=.get('Discipline', ''))
+            ws.cell(row=row, column=4, value=.get('major_object', ''))
+            ws.cell(row=row, column=5, value=.get('Location', ''))
+            ws.cell(row=row, column=6, value=.get('_Description', ''))
+            ws.cell(row=row, column=7, value=.get('inspection_date', ''))
+            ws.cell(row=row, column=8, value=.get('Correction_acts', ''))
+            ws.cell(row=row, column=9, value=.get('closed_date.plan', ''))
+            ws.cell(row=row, column=10, value=.get('closed_date.actual', ''))
+            ws.cell(row=row, column=11, value=.get('inspector_name_field', ''))
+            ws.cell(row=row, column=12, value=.get('_Status', ''))
+            ws.cell(row=row, column=13, value=.get('inspector_name', ''))
+            ws.cell(row=row, column=14, value=.get('created_at', ''))
     
     
     elif inspection_type == "REMARK":
@@ -529,7 +529,7 @@ def export_geodetic():
     )
 
 
-@app.route('/export_ncr')
+@app.route('/export_')
 @login_required
 def export_ncr():
     """Экспорт NCR в Excel"""
@@ -1301,9 +1301,32 @@ def new_remark():
 @app.route('/new_ncr', methods=['GET', 'POST'])
 @login_required
 def new_ncr():
-    """Создание отчета о несоответствии (NCR)"""
+    try:
+        generated_ncr_number = generate_ncr_number()
+    except Exception as e:
+        print("Ошибка генерации NCR:", e)
+        flash("Ошибка генерации номера NCR", "error")
+        return redirect(url_for('dashboard'))
+    def generate_ncr_number():
+    prefix = "TSFS-AGMK-NCR-"
+    try:
+        ncr_list = DataManager.load_data('ncr_reports')
+    except Exception as e:
+        print("Ошибка загрузки NCR:", e)
+        return prefix + "0001"
 
-    generated_ncr_number = generate_ncr_number()
+    numbers = []
+
+    for ncr in ncr_list:
+        num = ncr.get('NCR_Number', '')
+        if num.startswith(prefix):
+            try:
+                numbers.append(int(num.replace(prefix, '')))
+            except ValueError:
+                continue  # пропускаем битые номера
+
+    next_number = max(numbers) + 1 if numbers else 1
+    return prefix + f"{next_number:04d}"
     
 
     if request.method == 'POST':
@@ -1514,6 +1537,7 @@ def create_test_users():
 
 if __name__ == '__main__':  
     app.run(debug=True)
+
 
 
 
