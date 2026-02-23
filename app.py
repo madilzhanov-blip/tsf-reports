@@ -356,7 +356,7 @@ def create_excel_file(data, inspection_type):
         
 
         for row,  in enumerate(data, 2):
-            ws.cell(row=row, column=1, value=.get('id', ''))
+            ws.cell(row=row, column=1, value=ncr.get('id', ''))
             ws.cell(row=row, column=2, value=.get('_Number', ''))
             ws.cell(row=row, column=3, value=.get('Discipline', ''))
             ws.cell(row=row, column=4, value=.get('major_object', ''))
@@ -1541,6 +1541,7 @@ def create_test_users():
 
 if __name__ == '__main__':  
     app.run(debug=True)
+
 
 
 
