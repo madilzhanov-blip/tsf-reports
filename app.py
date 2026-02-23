@@ -268,7 +268,11 @@ def export_single_inspection(inspection_type, inspection_id):
         flash(f'❌ Ошибка экспорта: {str(e)}', 'error')
     
     return redirect(url_for(f'{inspection_type}_list'))
-
+    
+@app.route('/test_ncr_number')
+def test_ncr_number():
+    return generate_ncr_number()
+    
 @app.route('/test_export_system')
 @login_required  
 def test_export_system():
@@ -1537,6 +1541,7 @@ def create_test_users():
 
 if __name__ == '__main__':  
     app.run(debug=True)
+
 
 
 
