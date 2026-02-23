@@ -1321,6 +1321,8 @@ def generate_ncr_number():
 
     next_number = max(numbers) + 1 if numbers else 1
     return prefix + f"{next_number:04d}"
+
+
 def get_last_contractor():
     ncr_list = DataManager.load_data('ncr_reports')
     return ncr_list[-1].get('Contractor', '') if ncr_list else ''
@@ -1329,16 +1331,11 @@ def get_last_contractor():
 def get_last_technical_supervisor_company():
     ncr_list = DataManager.load_data('ncr_reports')
     return ncr_list[-1].get('technical_supervisor_company', '') if ncr_list else ''
-    
+
 @app.route('/new_ncr', methods=['GET', 'POST'])
 @login_required
 def new_ncr():
-    try:
-        generated_ncr_number = generate_ncr_number()
-    except Exception as e:
-        print("Ошибка генерации NCR:", e)
-        flash("Ошибка генерации номера NCR", "error")
-        return redirect(url_for('dashboard'))
+    generated_ncr_number = generate_ncr_number()
 
     if request.method == 'POST':
         ncr_report = {
@@ -1359,18 +1356,22 @@ def new_ncr():
             'closed_date.actual': request.form.get('closed_date.actual', ''),
             'Measures': request.form.get('Measures', ''),
             'inspector_name_field': request.form.get('inspector_name_field', ''),
-            'NCR_Status': request.form.get('NCR_Status', ''),
+            'NCR_Status': request.form.get('NCR_Status', 'Открыт'),
             'inspector_id': session.get('user_id'),
             'inspector_name': session.get('full_name'),
             'photos': []
         }
 
         if not DataManager.add_record('ncr_reports', ncr_report):
-            flash('❌ Ошибка при создании отчета', 'error')
+            flash('❌ Ошибка при создании NCR', 'error')
             return redirect(url_for('new_ncr'))
 
-        flash('⚠️ NCR необходимо распечатать, подписать подрядчиком и загрузить скан', 'warning')
+        flash(
+            '⚠️ NCR необходимо распечатать, подписать подрядчиком и загрузить подписанный скан',
+            'warning'
+        )
 
+        # --- сохранение фото ---
         all_ncr = DataManager.load_data('ncr_reports')
         ncr_id = max(all_ncr, key=lambda x: x['id'])['id']
 
@@ -1397,8 +1398,6 @@ def new_ncr():
         generated_contractor=get_last_contractor(),
         generated_technical_supervisor_company=get_last_technical_supervisor_company()
     )
-
-
 
 @app.route('/daily_report', methods=['GET', 'POST'])
 @login_required
@@ -1531,6 +1530,7 @@ def create_test_users():
 
 if __name__ == '__main__':  
     app.run(debug=True)
+
 
 
 
